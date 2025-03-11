@@ -1,25 +1,24 @@
-Aprire lo script su Mysql ed eseguire cosi da creare il databaseglam10
+Open the script on Mysql and run it to create the databaseglam10
 
 N.B
-Il database viene fornito con dati già presenti al suo interno:
+The database comes with data already present in it:
 
-- 3 Maestri
-	('Paolo', 'Ventresca', '1234567890', 'paolo.ventresca@example.com', 'password123'),
-	('Angelo', 'Trapanese', '0987654321', 'angelo.trapanese@example.com', 'password456'),
-	('Loredana', 'Circuito', '3334445550', 'loredana.circuito@example.com', 'password222');
+- 3 Masters
+('Paolo', 'Ventresca', '1234567890', 'paolo.ventresca@example.com', 'password123'),
+('Angelo', 'Trapanese', '0987654321', 'angelo.trapanese@example.com', 'password456'),
+('Loredana', 'Circuit', '3334445550', 'loredana.circuito@example.com', 'password222');
 
-- 2 Studenti Registrati
-	('Ludovico', 'Einaudi', '1955-12-23', '3390078564', 'vleinaudi', 'ludovico.einaudi@example.com', 'password333'),
-	('Alex', 'delPiero', '1974-11-09', '3393378565', 'adelpiero', 'alex.delpiero@example.com', 'password444');
+- 2 Registered Students
+('Ludovico', 'Einaudi', '1955-12-23', '3390078564', 'vleinaudi', 'ludovico.einaudi@example.com', 'password333'),
+('Alex', 'delPiero', '1974-11-09', '3393378565', 'adelpiero', 'alex.delpiero@example.com', 'password444');
 
-- 5 Strumenti
-	('VIOLINO', 3), -- Loredana
-	('CHITARRA', 2), -- Angelo
-	('PIANOFORTE', 1), -- Paolo
-	('BATTERIA', 3), -- Loredana
-	('SASSOFONO', 2); -- Angelo
+- 5 Tools
+('VIOLIN', 3), -- Loredana
+('CHITARRA', 2), -- Angel
+('PIANO', 1), -- Paolo
+('DRUMS', 3), -- Loredana
+('SAXOPHONE', 2); --Angel
 
-- Nessun giorno di Disponibilità
-- Nessuna Lezione
-- Nessuna Prenotazione
-
+- No days of availability
+- No lessons
+- No reservation
