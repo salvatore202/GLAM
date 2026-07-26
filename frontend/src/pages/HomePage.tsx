@@ -25,7 +25,7 @@ export function HomePage() {
         />
         <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 py-24 text-center sm:py-32">
           <span className="font-mono text-xs uppercase tracking-[0.35em] text-brass-pale/80">
-            Gestione Lezioni A Maestri
+            Gestione Lezioni Associazione Musicale
           </span>
           <h1 className="mt-6 max-w-2xl font-display text-4xl font-medium leading-[1.1] text-parchment sm:text-6xl">
             Prenota la tua prossima lezione di musica.
@@ -64,7 +64,7 @@ export function HomePage() {
       <section className="mx-auto max-w-5xl px-6 py-16">
         <h2 className="text-center font-display text-2xl text-ink">Strumenti insegnati</h2>
         <p className="mx-auto mt-2 max-w-md text-center text-sm text-ink-soft">
-          Ogni strumento e' insegnato da uno o piu' Maestri registrati sulla piattaforma.
+          Ogni strumento è insegnato da uno o più Maestri registrati sulla piattaforma.
         </p>
 
         {strumenti === null ? (

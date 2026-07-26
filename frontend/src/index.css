@@ -20,7 +20,7 @@
 @import '@fontsource/ibm-plex-mono/latin-500.css';
 
 @theme {
-  --color-stage: #2b2320;
+  --color-stage: #404040;
   --color-stage-deep: #1c1613;
   --color-stage-light: #3c3129;
 
@@ -29,16 +29,16 @@
   --color-parchment-dim: #efe9d8;
 
   --color-ink: #241c16;
-  --color-ink-soft: #5a4f44;
-  --color-ink-faint: #8a7f70;
+  --color-ink-soft: #800000;
+  --color-ink-faint: #808080;
 
-  --color-brass: #c9a03d;
-  --color-brass-deep: #a9822c;
-  --color-brass-pale: #f1e2b8;
+  --color-brass: #901010;
+  --color-brass-deep: #800000;
+  --color-brass-pale: #8cf2f2;
 
-  --color-velvet: #33513e;
-  --color-velvet-deep: #24392c;
-  --color-velvet-pale: #d9e6dd;
+  --color-velvet: #901010;
+  --color-velvet-deep: #666666;
+  --color-velvet-pale: #8cf2f2;
 
   --color-wine: #8c3a3a;
   --color-wine-deep: #6e2c2c;

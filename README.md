@@ -52,8 +52,91 @@ La repository è organizzata in 4 directory principali. Indicazioni su struttura
 ├── README.md                       # Questo file
 └── WEB_LAYER.md                    # Documentazione del layer REST + frontend
 ```
+
 ## Tutorial per testare la repo
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/salvatore202/GLAM)
+
+Per avviare ed testare l'intero sistema (backend Java, database MySQL tramite XAMPP e frontend React), segui i passaggi descritti di seguito.
+
+### 1. Scaricare e installare XAMPP
+
+XAMPP include il server MySQL necessario per la persistenza dei dati dell'applicazione.
+
+#### Su Linux
+Apri il terminale ed esegui i seguenti comandi per scaricare, rendere eseguibile e installare XAMPP:
+
+```bash
+# Scarica l'installer di XAMPP per Linux (sostituisci la versione se necessario)
+wget https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run
+
+# Rendi il file eseguibile
+chmod +x xampp-linux-x64-8.2.12-0-installer.run
+
+# Esegui l'installer con privilegi di root
+sudo ./xampp-linux-x64-8.2.12-0-installer.run
+
+# Avvia il pannello di controllo o direttamente i servizi (Apache e MySQL)
+sudo /opt/lampp/lampp start
+```
+
+#### Su Windows
+1. Scarica l'installer ufficiale di XAMPP per Windows dal [sito ufficiale di Apache Friends](https://www.apachefriends.org/it/index.html) (scegli la versione con PHP 8.2 o superiore).
+2. Esegui il file `.exe` scaricato e segui la procedura guidata di installazione lasciando le impostazioni predefinite (solitamente installato in `C:\xampp`).
+3. Apri il **XAMPP Control Panel** e clicca su **Start** in corrispondenza del modulo **MySQL** (e opzionalmente **Apache**).
+
+---
+
+### 2. Eseguire lo script di sviluppo
+
+Assicurati che il servizio MySQL di XAMPP sia attivo, quindi apri il terminale nella root del progetto ed esegui lo script di setup e avvio:
+
+```bash
+bash scripts/dev-up.sh
+```
+
+> **Nota:** Questo script avvia il backend e popola automaticamente il database con dati di test predefiniti. Nello specifico, vengono inseriti i seguenti record:
+
+#### Maestri
+| idMaestro | nome | cognome | numeroditelefono | email | password |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Paolo | Ventresca | 1234567890 | paolo.ventresca@example.com | password123 |
+| 2 | Angelo | Trapanese | 0987654321 | angelo.trapanese@example.com | password456 |
+| 3 | Loredana | Circuito | 3334445550 | loredana.circuito@example.com | password222 |
+
+#### Strumenti
+| idStrumento | nome | idMaestro |
+| :--- | :--- | :--- |
+| 1 | VIOLINO | 3 |
+| 2 | CHITARRA | 2 |
+| 3 | PIANOFORTE | 1 |
+| 4 | BATTERIA | 3 |
+| 5 | SASSOFONO | 2 |
+
+#### Studenti
+| idStudente | nome | cognome | datadinascita | numeroditelefono | username | email | password |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Ludovico | Einaudi | 1955-12-23 | 3390078564 | vleinaudi | ludovico.einaudi@example.com | password333 |
+| 2 | Alex | delPiero | 1974-11-09 | 3393378565 | adelpiero | alex.delpiero@example.com | password444 |
+| 3 | User | FromGitHub | 1974-12-07 | 3393778565 | user | user.fromgithub@example.com | password555 |
+
+---
+
+### 3. Installare e avviare il Frontend
+
+Apri un nuovo terminale, posizionati nella cartella del frontend, installa le dipendenze e avvia il server di sviluppo:
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+---
+
+### 4. Aprire il browser
+
+Una volta avviati tutti i servizi, apri il tuo browser preferito e collegati all'indirizzo:
+
+👉 **[http://localhost:5173/](http://localhost:5173/)**
+
+Da qui potrai interagire con l'interfaccia web del sistema GLAM.
 
 ## 📄 Documentazione del Progetto
 

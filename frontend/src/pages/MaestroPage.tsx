@@ -153,7 +153,7 @@ function InserisciGiorno() {
 
   return (
     <Card className="mx-auto max-w-md p-6">
-      <h2 className="mb-1 font-display text-lg text-ink">Apri un nuovo giorno di disponibilita'</h2>
+      <h2 className="mb-1 font-display text-lg text-ink">Apri un nuovo giorno di disponibilità</h2>
       <p className="mb-5 text-xs text-ink-soft">
         Vengono create automaticamente 4 lezioni: 17:00, 18:00, 19:00, 20:00, livello BASE.
       </p>
@@ -207,7 +207,7 @@ function ModificaGiorno() {
 
   return (
     <Card className="mx-auto max-w-md p-6">
-      <h2 className="mb-1 font-display text-lg text-ink">Sposta un giorno di disponibilita'</h2>
+      <h2 className="mb-1 font-display text-lg text-ink">Sposta un giorno di disponibilità</h2>
       <p className="mb-5 text-xs text-ink-soft">Entrambe le date devono essere future.</p>
       <form onSubmit={submit} className="flex flex-col gap-4">
         <TextField
