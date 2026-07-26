@@ -52,7 +52,8 @@ La repository è organizzata in 4 directory principali. Indicazioni su struttura
 ├── README.md                       # Questo file
 └── WEB_LAYER.md                    # Documentazione del layer REST + frontend
 ```
-
+## Tutorial per testare la repo
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/salvatore202/GLAM)
 
 ## 📄 Documentazione del Progetto
 

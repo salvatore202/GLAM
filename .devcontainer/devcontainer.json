@@ -1,0 +1,23 @@
+{
+  "name": "GLAM Environment",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "Pivotal.vscode-boot-dev-pack",
+        "vue.volar"
+      ]
+    }
+  },
+  "portsAttributes": {
+    "8080": {
+      "label": "API Server",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "postCreateCommand": "bash scripts/dev-up.sh"
+}
