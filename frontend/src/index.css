@@ -1,0 +1,123 @@
+@import 'tailwindcss';
+
+/* Fraunces: titoli - una serif espressiva con personalita' "incisa", per i
+   momenti che devono sembrare la copertina di un programma di sala.
+   IBM Plex Sans: testo e interfaccia, leggibile nei form e nelle tabelle.
+   IBM Plex Mono: orari, prezzi, id di prenotazione - come su un biglietto.
+   Solo il subset "latin" (Basic Latin + Latin-1 Supplement: copre l'italiano,
+   incluse le vocali accentate e il simbolo dell'euro): "latin-ext" e' un
+   range disgiunto per altre lingue europee (polacco, ceco, vietnamita...)
+   che qui non serve. */
+@import '@fontsource/fraunces/latin-400.css';
+@import '@fontsource/fraunces/latin-500.css';
+@import '@fontsource/fraunces/latin-600.css';
+@import '@fontsource/fraunces/latin-600-italic.css';
+@import '@fontsource/fraunces/latin-700.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource/ibm-plex-mono/latin-500.css';
+
+@theme {
+  --color-stage: #2b2320;
+  --color-stage-deep: #1c1613;
+  --color-stage-light: #3c3129;
+
+  --color-paper: #edeae0;
+  --color-parchment: #f8f4e8;
+  --color-parchment-dim: #efe9d8;
+
+  --color-ink: #241c16;
+  --color-ink-soft: #5a4f44;
+  --color-ink-faint: #8a7f70;
+
+  --color-brass: #c9a03d;
+  --color-brass-deep: #a9822c;
+  --color-brass-pale: #f1e2b8;
+
+  --color-velvet: #33513e;
+  --color-velvet-deep: #24392c;
+  --color-velvet-pale: #d9e6dd;
+
+  --color-wine: #8c3a3a;
+  --color-wine-deep: #6e2c2c;
+  --color-wine-pale: #f3dede;
+
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-ink-faint);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background-color: var(--color-brass);
+    color: var(--color-stage-deep);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brass-deep);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Il "taglio" da biglietto del concerto: due mezze-lune ritagliate ai lati
+     di uno slot prenotabile. Le tacche assumono il colore dello sfondo su cui
+     la card poggia (il chiamante imposta --notch-bg). */
+  .ticket-notch::before,
+  .ticket-notch::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    background: var(--notch-bg, var(--color-paper));
+    border-radius: 9999px;
+    transform: translateY(-50%);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .ticket-notch::before {
+    left: -11px;
+  }
+  .ticket-notch::after {
+    right: -11px;
+  }
+
+  .bg-noise {
+    background-image: radial-gradient(circle at 1px 1px, rgba(246, 241, 228, 0.05) 1px, transparent 0);
+    background-size: 3px 3px;
+  }
+}
