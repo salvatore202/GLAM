@@ -32,15 +32,34 @@ jobs:
       # di inizializzare il datadir, quindi reinizializziamo MySQL da zero.
       - name: Installa e configura MySQL (lower_case_table_names=1)
         run: |
-          sudo systemctl stop mysql || true
+          set -x
+          sudo service mysql stop || true
           sudo apt-get update -y
           sudo apt-get install -y mysql-server
           sudo grep -q "lower_case_table_names" /etc/mysql/mysql.conf.d/mysqld.cnf || \
             sudo sed -i '/\[mysqld\]/a lower_case_table_names=1' /etc/mysql/mysql.conf.d/mysqld.cnf
           sudo rm -rf /var/lib/mysql/*
           sudo mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
-          sudo systemctl start mysql
-          for i in $(seq 1 20); do sudo mysqladmin ping --silent && break; sleep 1; done
+
+          if ! sudo service mysql start; then
+            echo "::error::'service mysql start' ha fallito, stampo i log per capire perche'"
+            sudo journalctl -u mysql --no-pager -n 200 || true
+            sudo cat /var/log/mysql/error.log || true
+            exit 1
+          fi
+
+          ready=false
+          for i in $(seq 1 30); do
+            if sudo mysqladmin ping --silent; then ready=true; break; fi
+            sleep 1
+          done
+          if [ "$ready" != true ]; then
+            echo "::error::MySQL non risponde al ping dopo 30s"
+            sudo journalctl -u mysql --no-pager -n 200 || true
+            sudo cat /var/log/mysql/error.log || true
+            exit 1
+          fi
+
           sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
           mysql -u root -e "SHOW VARIABLES LIKE 'lower_case_table_names';"
 
