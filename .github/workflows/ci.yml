@@ -12,25 +12,6 @@ jobs:
     name: Backend (compilazione, test originali, smoke test REST)
     runs-on: ubuntu-latest
     
-    # -------------------------------------------------------------
-    # MySQL viene avviato come container affiancato già configurato
-    # con lower_case_table_names=1 prima dell'inizializzazione!
-    # -------------------------------------------------------------
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-        options: >-
-          --entrypoint mysqld
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-          --lower-case-table-names=1
-        ports:
-          - 3306:3306
-
     env:
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
@@ -45,10 +26,40 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Installa MySQL Client
+      # -------------------------------------------------------------
+      # Avviamo MySQL direttamente tramite Docker Run.
+      # Tutto ciò che segue l'immagine (mysql:8.0) viene passato 
+      # correttamente al demone mysqld!
+      # -------------------------------------------------------------
+      - name: Avvia container MySQL
+        run: |
+          docker run -d --name mysql-db \
+            -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+            -p 3306:3306 \
+            mysql:8.0 \
+            --lower-case-table-names=1
+
+      - name: Installa MySQL Client e attendi avvio DB
         run: |
           sudo apt-get update -y
           sudo apt-get install -y mysql-client
+          
+          echo "In attesa che MySQL sia pronto..."
+          ready=false
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 --silent; then
+              ready=true
+              echo "MySQL è pronto e accetta connessioni!"
+              break
+            fi
+            sleep 2
+          done
+          
+          if [ "$ready" != true ]; then
+            echo "::error::MySQL non si è avviato in tempo."
+            docker logs mysql-db
+            exit 1
+          fi
 
       - name: Verifica configurazione MySQL
         run: |
