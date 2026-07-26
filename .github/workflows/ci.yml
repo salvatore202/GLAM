@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend (compilazione, test originali, smoke test REST)
+    runs-on: ubuntu-latest
+    
+    env:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Imposta JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # -------------------------------------------------------------
+      # Avviamo MySQL direttamente tramite Docker Run.
+      # Tutto ciò che segue l'immagine (mysql:8.0) viene passato 
+      # correttamente al demone mysqld!
+      # -------------------------------------------------------------
+      - name: Avvia container MySQL
+        run: |
+          docker run -d --name mysql-db \
+            -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+            -p 3306:3306 \
+            mysql:8.0 \
+            --lower-case-table-names=1
+
+      - name: Installa MySQL Client e attendi avvio DB
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y mysql-client
+          
+          echo "In attesa che MySQL sia pronto..."
+          ready=false
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 --silent; then
+              ready=true
+              echo "MySQL è pronto e accetta connessioni!"
+              break
+            fi
+            sleep 2
+          done
+          
+          if [ "$ready" != true ]; then
+            echo "::error::MySQL non si è avviato in tempo."
+            docker logs mysql-db
+            exit 1
+          fi
+
+      - name: Verifica configurazione MySQL
+        run: |
+          mysql -h 127.0.0.1 -u root -e "SHOW VARIABLES LIKE 'lower_case_table_names';"
+
+      - name: Carica schema e fixture di test
+        run: |
+          mysql -h 127.0.0.1 -u root < Database/MySql/databaseglam10.sql
+          mysql -h 127.0.0.1 -u root < Database/MySql/test_fixtures.sql
+
+      - name: Compila il backend (Entity, DAO, Control, Boundary, incluso il nuovo layer web)
+        run: |
+          mkdir -p build/classes
+          javac -encoding UTF-8 -d build/classes -cp "src/lib/mysql-connector-j-8.3.0.jar" \
+            $(find src/Boundary src/Control src/DAO src/Entity src/Exception -name "*.java")
+
+      - name: Compila ed esegui la suite JUnit ORIGINALE (invariata)
+        run: |
+          javac -encoding UTF-8 -d build/classes \
+            -cp "src/lib/mysql-connector-j-8.3.0.jar:src/junit-platform-console-standalone-1.9.3.jar:build/classes" \
+            $(find src/Test -name "*.java")
+          java -jar src/junit-platform-console-standalone-1.9.3.jar \
+            -cp "build/classes:src/lib/mysql-connector-j-8.3.0.jar" \
+            --scan-classpath --details=tree --fail-if-no-tests
+
+      - name: Avvia Boundary.web.ApiServer
+        run: |
+          nohup java -cp "build/classes:src/lib/mysql-connector-j-8.3.0.jar" Boundary.web.ApiServer > api-server.log 2>&1 &
+          for i in $(seq 1 20); do curl -sf http://localhost:8080/api/health && break; sleep 1; done
+          curl -sf http://localhost:8080/api/health || (echo "--- log server ---"; cat api-server.log; exit 1)
+
+      - name: Smoke test REST API (inclusi i due bug noti evitati)
+        run: bash scripts/smoke-test-api.sh
+
+      - name: Carica il log del server (solo in caso di fallimento)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-server-log
+          path: api-server.log
+
+  frontend:
+    name: Frontend (lint, typecheck, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Imposta Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build di produzione
+        run: npm run build
+
+      - name: Carica la build come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 14

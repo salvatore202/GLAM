@@ -1,0 +1,17 @@
+# Build Java (javac -d build/classes ...)
+build/
+*.class
+
+# Frontend (vedi anche frontend/.gitignore)
+frontend/node_modules/
+frontend/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Eclipse workspace metadata accidentalmente tracciata in passato
+src/.metadata/
