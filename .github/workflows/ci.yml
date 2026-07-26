@@ -11,9 +11,30 @@ jobs:
   backend:
     name: Backend (compilazione, test originali, smoke test REST)
     runs-on: ubuntu-latest
+    
+    # -------------------------------------------------------------
+    # MySQL viene avviato come container affiancato già configurato
+    # con lower_case_table_names=1 prima dell'inizializzazione!
+    # -------------------------------------------------------------
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        options: >-
+          --entrypoint mysqld
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+          --lower-case-table-names=1
+        ports:
+          - 3306:3306
+
     env:
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,49 +45,19 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      # Le query esistenti (LezioneDAO, MaestroDAO, ...) mischiano maiuscole e
-      # minuscole nei nomi tabella (es. "LEZIONE" e "Maestro" nella stessa
-      # classe). Funzionano solo se MySQL confronta i nomi tabella senza
-      # distinguere maiuscole/minuscole, che e' il default su Windows/macOS ma
-      # NON su Linux. lower_case_table_names puo' essere impostato solo prima
-      # di inizializzare il datadir, quindi reinizializziamo MySQL da zero.
-      - name: Installa e configura MySQL (lower_case_table_names=1)
+      - name: Installa MySQL Client
         run: |
-          set -x
-          sudo service mysql stop || true
           sudo apt-get update -y
-          sudo apt-get install -y mysql-server
-          sudo grep -q "lower_case_table_names" /etc/mysql/mysql.conf.d/mysqld.cnf || \
-            sudo sed -i '/\[mysqld\]/a lower_case_table_names=1' /etc/mysql/mysql.conf.d/mysqld.cnf
-          sudo rm -rf /var/lib/mysql/*
-          sudo mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
+          sudo apt-get install -y mysql-client
 
-          if ! sudo service mysql start; then
-            echo "::error::'service mysql start' ha fallito, stampo i log per capire perche'"
-            sudo journalctl -u mysql --no-pager -n 200 || true
-            sudo cat /var/log/mysql/error.log || true
-            exit 1
-          fi
-
-          ready=false
-          for i in $(seq 1 30); do
-            if sudo mysqladmin ping --silent; then ready=true; break; fi
-            sleep 1
-          done
-          if [ "$ready" != true ]; then
-            echo "::error::MySQL non risponde al ping dopo 30s"
-            sudo journalctl -u mysql --no-pager -n 200 || true
-            sudo cat /var/log/mysql/error.log || true
-            exit 1
-          fi
-
-          sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
-          mysql -u root -e "SHOW VARIABLES LIKE 'lower_case_table_names';"
+      - name: Verifica configurazione MySQL
+        run: |
+          mysql -h 127.0.0.1 -u root -e "SHOW VARIABLES LIKE 'lower_case_table_names';"
 
       - name: Carica schema e fixture di test
         run: |
-          mysql -u root < Database/MySql/databaseglam10.sql
-          mysql -u root < Database/MySql/test_fixtures.sql
+          mysql -h 127.0.0.1 -u root < Database/MySql/databaseglam10.sql
+          mysql -h 127.0.0.1 -u root < Database/MySql/test_fixtures.sql
 
       - name: Compila il backend (Entity, DAO, Control, Boundary, incluso il nuovo layer web)
         run: |
