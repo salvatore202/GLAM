@@ -66,10 +66,31 @@ Assicurati di avere **Docker** installato e funzionante sulla tua macchina.
 Apri il terminale nella root del progetto ed esegui:
 
 ```bash
+
+# Aggiorna gli indici dei pacchetti e installa le dipendenze
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+
+# Aggiungi la chiave GPG ufficiale di Docker
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL [https://download.docker.com/linux/ubuntu/gpg](https://download.docker.com/linux/ubuntu/gpg) | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Aggiungi il repository di Docker alle fonti di APT
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] [https://download.docker.com/linux/ubuntu](https://download.docker.com/linux/ubuntu) \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Aggiorna APT e installa Docker Engine e i relativi plugin
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Avvia la repo
 git switch web-frontend
 sudo usermod -aG docker $USER && newgrp docker
 chmod +x start.sh
-./start.sh
+bash start.sh
 ```
 
 > **Nota:** Lo script si occupa automaticamente di:
@@ -125,6 +146,14 @@ Una volta avviati tutti i servizi, apri il tuo browser preferito e collegati all
 👉 **[http://localhost:5173/](http://localhost:5173/)**
 
 Da qui potrai interagire con l'interfaccia web del sistema GLAM.
+
+
+## 🎥 Dimostrazione del Sistema
+
+Di seguito una panoramica visiva del funzionamento dell'applicazione:
+
+![Dimostrazione GLAM](docs/GLAM_demo.gif)
+
 
 ## 📄 Documentazione del Progetto
 
