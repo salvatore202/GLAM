@@ -55,45 +55,29 @@ La repository è organizzata in 4 directory principali. Indicazioni su struttura
 
 ## Tutorial per testare la repo
 
-Per avviare ed testare l'intero sistema (backend Java, database MySQL tramite XAMPP e frontend React), segui i passaggi descritti di seguito.
+Per avviare e testare l'intero sistema (backend Java, database MySQL e frontend React) non è più necessario installare XAMPP o avviare manualmente backend e frontend: tutto il sistema gira in un container Docker gestito automaticamente dallo script `start.sh`.
 
-### 1. Scaricare e installare XAMPP
+### 1. Prerequisiti
 
-XAMPP include il server MySQL necessario per la persistenza dei dati dell'applicazione.
+Assicurati di avere **Docker** installato e funzionante sulla tua macchina.
 
-#### Su Linux
-Apri il terminale ed esegui i seguenti comandi per scaricare, rendere eseguibile e installare XAMPP:
+### 2. Avviare il sistema
 
-```bash
-# Scarica l'installer di XAMPP per Linux (sostituisci la versione se necessario)
-wget https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run
-
-# Rendi il file eseguibile
-chmod +x xampp-linux-x64-8.2.12-0-installer.run
-
-# Esegui l'installer con privilegi di root
-sudo ./xampp-linux-x64-8.2.12-0-installer.run
-
-# Avvia il pannello di controllo o direttamente i servizi (Apache e MySQL)
-sudo /opt/lampp/lampp start
-```
-
-#### Su Windows
-1. Scarica l'installer ufficiale di XAMPP per Windows dal [sito ufficiale di Apache Friends](https://www.apachefriends.org/it/index.html) (scegli la versione con PHP 8.2 o superiore).
-2. Esegui il file `.exe` scaricato e segui la procedura guidata di installazione lasciando le impostazioni predefinite (solitamente installato in `C:\xampp`).
-3. Apri il **XAMPP Control Panel** e clicca su **Start** in corrispondenza del modulo **MySQL** (e opzionalmente **Apache**).
-
----
-
-### 2. Eseguire lo script di sviluppo
-
-Assicurati che il servizio MySQL di XAMPP sia attivo, quindi apri il terminale nella root del progetto ed esegui lo script di setup e avvio:
+Apri il terminale nella root del progetto ed esegui:
 
 ```bash
-bash scripts/dev-up.sh
+chmod +x start.sh
+./start.sh
 ```
 
-> **Nota:** Questo script avvia il backend e popola automaticamente il database con dati di test predefiniti. Nello specifico, vengono inseriti i seguenti record:
+> **Nota:** Lo script si occupa automaticamente di:
+> - effettuare il checkout del branch `web-frontend`
+> - buildare l'immagine Docker (backend Java + MySQL + frontend React)
+> - avviare il container
+> - popolare il database con i dati di test predefiniti
+> - aprire il browser sul frontend una volta pronto (`http://localhost:5173`)
+
+Nello specifico, il database viene popolato con i seguenti record:
 
 #### Maestri
 | idMaestro | nome | cognome | numeroditelefono | email | password |
@@ -118,16 +102,18 @@ bash scripts/dev-up.sh
 | 2 | Alex | delPiero | 1974-11-09 | 3393378565 | adelpiero | alex.delpiero@example.com | password444 |
 | 3 | User | FromGitHub | 1974-12-07 | 3393778565 | user | user.fromgithub@example.com | password555 |
 
----
-
-### 3. Installare e avviare il Frontend
-
-Apri un nuovo terminale, posizionati nella cartella del frontend, installa le dipendenze e avvia il server di sviluppo:
+### 3. Comandi utili
 
 ```bash
-cd frontend && npm install && npm run dev
+# Vedere i log in tempo reale
+docker logs -f glam_container
 ```
 
+
+```bash
+# Fermare il container
+docker stop glam_container
+```
 ---
 
 ### 4. Aprire il browser
