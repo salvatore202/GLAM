@@ -66,6 +66,8 @@ Assicurati di avere **Docker** installato e funzionante sulla tua macchina.
 Apri il terminale nella root del progetto ed esegui:
 
 ```bash
+git switch web-frontend
+sudo usermod -aG docker $USER && newgrp docker
 chmod +x start.sh
 ./start.sh
 ```
